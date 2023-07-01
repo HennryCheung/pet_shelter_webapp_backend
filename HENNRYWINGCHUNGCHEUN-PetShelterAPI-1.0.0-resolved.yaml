@@ -1,0 +1,640 @@
+---
+openapi: 3.0.0
+info:
+  title: pet-shelter-api
+  description: The API for the cats of the pet shelter
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/HENNRYWINGCHUNGCHEUN/PetShelterAPI/1.0.0
+  description: SwaggerHub API Auto Mocking
+- url: https://virtserver.swaggerhub.com/PetShelterAPI/1.0.0
+  description: SwaggerHub API Auto Mocking
+paths:
+  /cats:
+    get:
+      tags:
+      - Cats
+      description: returns all cats from different pet shelters
+      operationId: getCats
+      responses:
+        "200":
+          description: All cats from different pet shelters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: text
+                  example: abyssinian cat
+    post:
+      tags:
+      - Cats
+      operationId: addCat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddedCatInfo'
+      responses:
+        "200":
+          description: add cat successfully
+  /cat/{catId}/{value}:
+    post:
+      tags:
+      - Cat
+      operationId: setCat
+      parameters:
+      - name: catId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: value
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: text
+      responses:
+        "200":
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddCatApiResponse'
+  /cat/{catId}:
+    get:
+      tags:
+      - Cat
+      operationId: getCatByCatID
+      parameters:
+      - name: catId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatInfoByCatID'
+  /updateCatInfo/{catId}/{value}:
+    put:
+      tags:
+      - Cat
+      operationId: editCat
+      parameters:
+      - name: catId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: value
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          enum:
+          - "true"
+          - "false"
+      responses:
+        "200":
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCatApiResponse'
+  /deleteCat/{catId}/{value}:
+    delete:
+      tags:
+      - Cat
+      description: delete a cat based on its cat ID
+      operationId: deleteCat
+      parameters:
+      - name: catId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: value
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          enum:
+          - "true"
+          - "false"
+      responses:
+        "200":
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteCatApiResponse'
+  /lightingSummary:
+    get:
+      tags:
+      - Z-Wave
+      operationId: getLightingSummary
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LightingSummary'
+      x-swagger-router-controller: ZWave
+  /temperature:
+    get:
+      tags:
+      - Environment
+      operationId: temperatureSummary
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemperatureSummary'
+      x-swagger-router-controller: Environment
+  /temperature/forecast/{days}:
+    get:
+      tags:
+      - Environment
+      operationId: getForecast
+      parameters:
+      - name: days
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: the forecast
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForecastResponse'
+      x-swagger-router-controller: Environment
+  /temperature/{zoneId}:
+    get:
+      tags:
+      - Environment
+      operationId: getZoneTemperature
+      parameters:
+      - name: zoneId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Zone temperature
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemperatueZoneStatus'
+      x-swagger-router-controller: Environment
+  /temperature/{zoneId}/heater:
+    get:
+      tags:
+      - Environment
+      description: gets the state of the heater
+      operationId: getHeaterState
+      parameters:
+      - name: zoneId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: heater state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HeaterState'
+      x-swagger-router-controller: Environment
+  /temperature/{zoneId}/heater/{state}:
+    post:
+      tags:
+      - Environment
+      description: turns the heater on or off
+      operationId: setHeaterState
+      parameters:
+      - name: zoneId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: state
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          enum:
+          - "false"
+          - "true"
+      responses:
+        "200":
+          description: Status of the operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      x-swagger-router-controller: Environment
+  /zones:
+    get:
+      tags:
+      - Zones
+      operationId: getZones
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      x-swagger-router-controller: Zones
+  /zones/{zoneId}/quiet:
+    get:
+      tags:
+      - Zones
+      operationId: quietZone
+      parameters:
+      - name: zoneId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          enum:
+          - basement
+          - first-floor
+          - second-floor
+      responses:
+        "200":
+          description: ok
+      x-swagger-router-controller: Zones
+components:
+  schemas:
+    LightingSummary:
+      type: object
+      properties:
+        zones:
+          type: array
+          items:
+            $ref: '#/components/schemas/LightingZone'
+        zoneStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/LightingZoneStatus'
+      description: ok
+    LightingZone:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        deviceId:
+          type: integer
+          format: int32
+        deviceType:
+          type: string
+          enum:
+          - dimmer
+          - switch
+        zone:
+          type: string
+    LightingZoneStatus:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        lastUpdate:
+          type: string
+          format: date-time
+        level:
+          type: integer
+          format: int32
+      description: the status of the lighting zone.
+    TemperatureSummary:
+      type: object
+      properties:
+        zones:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemperatureZone'
+        zoneStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemperatueZoneStatus'
+      description: ok
+    TemperatureZone:
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: integer
+          description: the unique identifier for the zone
+          format: int32
+        name:
+          type: string
+        inputPosition:
+          type: integer
+          format: int32
+        outputPosition:
+          type: integer
+          format: int32
+        zone:
+          type: string
+      description: a single temperature zone
+    TemperatueZoneStatus:
+      required:
+      - id
+      - timestamp
+      - value
+      type: object
+      properties:
+        id:
+          type: string
+          description: the unique identifier for the zone
+        name:
+          type: string
+          description: the name of the zone
+        value:
+          type: number
+          description: the temperature in the zone
+          format: double
+        units:
+          type: string
+          description: the temperature units
+          default: fahrenheit
+          enum:
+          - celsius
+          - fahrenheit
+        timestamp:
+          type: string
+          description: the timestamp when the temperature was measured
+          format: date-time
+      description: status of a single zone
+    ApiResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: added
+    AddCatApiResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: added
+    UpdateCatApiResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: updated
+    DeleteCatApiResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: deleted
+    HeaterState:
+      type: object
+      properties:
+        id:
+          type: string
+        state:
+          type: string
+    CatInfoByCatID:
+      type: object
+      properties:
+        catID:
+          type: string
+          format: text
+          example: "1002"
+        cat_name:
+          type: string
+          format: text
+          example: Lucy
+        cat_type:
+          type: string
+          format: text
+          example: Isle of Female
+        country_of_origin:
+          type: string
+          format: text
+          example: Human
+        origin:
+          type: string
+          format: text
+          example: natural
+        size:
+          type: string
+          format: text
+          example: short
+        hair_type:
+          type: string
+          format: text
+          example: curly hair
+        color_pattern:
+          type: string
+          format: text
+          example: red
+        shelter_center:
+          type: string
+          format: text
+          example: Cat Society (Hong Kong) Limited
+        cat_image:
+          type: string
+          format: text
+          example: Fan2.png
+        address:
+          type: string
+          format: text
+          example: "No. 150, Heping New Village, Tuen Mun"
+        business_hours:
+          type: string
+          format: text
+          example: 11:00 - 23:00
+        contact_number:
+          type: string
+          format: text
+          example: "56784321"
+        map_link:
+          type: string
+          format: text
+          example: https://www.google.com/maps/place/%E9%A6%99%E6%B8%...
+        official_website_url:
+          type: string
+          format: text
+          example: https://www.hk-aac.org.hk/index.php
+    ForecastResponse:
+      type: object
+      properties:
+        city:
+          $ref: '#/components/schemas/City'
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forecast'
+    Forecast:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+        pressure:
+          type: number
+          format: double
+        humidity:
+          type: integer
+          format: int32
+        windSpeed:
+          type: number
+          format: double
+        clouds:
+          type: integer
+          format: int32
+        temperature:
+          $ref: '#/components/schemas/ForecastTemperature'
+        weather:
+          $ref: '#/components/schemas/WeatherForecast'
+    City:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        lat:
+          type: number
+          format: double
+        lon:
+          type: number
+          format: double
+        country:
+          type: string
+    ForecastTemperature:
+      type: object
+      properties:
+        low:
+          type: number
+          format: double
+        high:
+          type: number
+          format: double
+        morning:
+          type: number
+          format: double
+        day:
+          type: number
+          format: double
+        evening:
+          type: number
+          format: double
+        night:
+          type: number
+          format: double
+    WeatherForecast:
+      type: object
+      properties:
+        summary:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+    AddedCatInfo:
+      type: object
+      properties:
+        cat_ID:
+          type: string
+          format: text
+          example: "1001"
+        cat_name:
+          type: string
+          format: text
+          example: KiKi
+        cat_type:
+          type: string
+          format: text
+          example: abyssinian cat
+        country_of_origin:
+          type: string
+          format: text
+          example: Ethiopia
+        origin:
+          type: string
+          format: text
+          example: natural
+        size:
+          type: string
+        hair_type:
+          type: string
+          format: text
+          example: short
+        color_pattern:
+          type: string
+          format: text
+          example: monochrome
+        cat_image:
+          type: string
+          format: text
+          example: Fan1.png
+        address:
+          type: string
+          format: text
+          example: 11:00 - 23:00
+        contact_number:
+          type: string
+          format: text
+          example: "56784321"
+        map_link:
+          type: string
+          format: text
+          example: https://www.google.com/maps/place/%E9%A6%99%E6%B8%...
+        official_website_url:
+          type: string
+          format: text
+          example: https://www.hk-aac.org.hk/index.php
